@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Jira Project Progress</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Jira Project Progress Over Time</h1>
+  <h2 id="jqlQuery"></h2>
+  <canvas id="progressChart"></canvas>
+
+  <script>
+    fetch('/data')
+      .then(res => res.json())
+      .then(data => {
+        const labels = Object.keys(data).sort((a, b) => a.localeCompare(b));
+        
+        // Calculate total tickets per status
+        const statusTotals = {};
+        labels.forEach(date => {
+          Object.entries(data[date]).forEach(([status, count]) => {
+            statusTotals[status] = (statusTotals[status] || 0) + count;
+          });
+        });
+
+        // Get top 7 statuses by total count
+        const topStatuses = Object.entries(statusTotals)
+          .sort(([, countA], [, countB]) => countB - countA)
+          .slice(0, 7)
+          .map(([status]) => status);
+
+        const datasets = topStatuses.map(status => ({
+          label: status,
+          data: labels.map(date => data[date][status] || 0),
+          borderWidth: 2,
+          fill: false
+        }));
+
+        new Chart(document.getElementById('progressChart'), {
+          type: 'line',
+          data: {
+            labels,
+            datasets
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: {
+                // Removed reverse option to show oldest dates on the left
+              },
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+      });
+  </script>
+</body>
+</html>
