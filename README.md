@@ -2,6 +2,9 @@
 
 This tool fetches Jira tickets with changelog data and displays how many tickets were in each status over time using a line chart.
 
+<img width="1420" alt="image" src="https://github.com/user-attachments/assets/a4dd4e18-a36a-4827-aa7f-7f0c8438da5e" />
+
+
 ## Setup
 1. Install dependencies:
    ```bash
