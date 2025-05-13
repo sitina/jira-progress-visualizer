@@ -11,7 +11,7 @@ app.use(express.static('public'));
 
 app.get('/data', async (req, res) => {
   try {
-    const jql = 'textfields ~ "BenerailConnect*"'; // Replace with your project's JQL or make configurable
+    const jql = '[YOUR JQL]';
     const issues = await getJiraIssuesWithChangelog(jql);
     const timeline = processTransitions(issues);
     res.json({ timeline, jql });
