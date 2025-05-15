@@ -25,7 +25,14 @@ function processTransitions(issues) {
 
     transitions.forEach(t => {
       if (!timeline[t.date]) timeline[t.date] = {};
-      timeline[t.date][t.to] = (timeline[t.date][t.to] || 0) + 1;
+      if (!timeline[t.date][t.to]) {
+        timeline[t.date][t.to] = {
+          count: 0,
+          tickets: []
+        };
+      }
+      timeline[t.date][t.to].count++;
+      timeline[t.date][t.to].tickets.push(issue.key);
     });
   });
 

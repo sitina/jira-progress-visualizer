@@ -25,8 +25,8 @@
         // Calculate total tickets per status
         const statusTotals = {};
         labels.forEach(date => {
-          Object.entries(data.timeline[date]).forEach(([status, count]) => {
-            statusTotals[status] = (statusTotals[status] || 0) + count;
+          Object.entries(data.timeline[date]).forEach(([status, info]) => {
+            statusTotals[status] = (statusTotals[status] || 0) + info.count;
           });
         });
         console.log('📈 Status totals:', statusTotals);
@@ -40,9 +40,11 @@
 
         const datasets = topStatuses.map(status => ({
           label: status,
-          data: labels.map(date => data.timeline[date][status] || 0),
+          data: labels.map(date => data.timeline[date][status]?.count || 0),
           borderWidth: 2,
-          fill: false
+          fill: false,
+          // Store the ticket information in the dataset
+          _tickets: labels.map(date => data.timeline[date][status]?.tickets || [])
         }));
 
         // Display JQL query
@@ -63,6 +65,26 @@
               },
               y: {
                 beginAtZero: true
+              }
+            },
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const dataset = context.dataset;
+                    const date = context.label;
+                    const tickets = dataset._tickets[context.dataIndex];
+                    
+                    // Format the tooltip content
+                    let tooltipContent = [
+                      `${dataset.label}: ${context.raw} tickets`,
+                      'Tickets:',
+                      ...tickets.map(ticket => `- ${ticket}`)
+                    ];
+                    
+                    return tooltipContent;
+                  }
+                }
               }
             }
           }
