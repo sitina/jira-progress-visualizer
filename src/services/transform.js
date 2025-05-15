@@ -5,6 +5,7 @@ function processTransitions(issues) {
   issues.forEach((issue, index) => {
     console.log(`📝 Processing issue ${index + 1}/${issues.length}`);
     
+    // Get all transitions for this issue
     const transitions = issue.changelog.histories.flatMap(h => 
       h.items
         .filter(i => i.field === 'status')
@@ -15,24 +16,46 @@ function processTransitions(issues) {
         }))
     );
 
-    let currentState = issue.fields.status.name;
-    let creationDate = issue.fields.created.split('T')[0];
+    // Add initial state
+    const creationDate = issue.fields.created.split('T')[0];
+    transitions.unshift({ 
+      date: creationDate, 
+      to: issue.fields.status.name 
+    });
 
-    console.log(`📅 Issue created on ${creationDate} with status ${currentState}`);
-    console.log(`🔄 Found ${transitions.length} status transitions`);
+    // Group transitions by date
+    const transitionsByDate = transitions.reduce((acc, t) => {
+      if (!acc[t.date]) {
+        acc[t.date] = [];
+      }
+      acc[t.date].push(t);
+      return acc;
+    }, {});
 
-    transitions.unshift({ date: creationDate, to: currentState });
-
-    transitions.forEach(t => {
-      if (!timeline[t.date]) timeline[t.date] = {};
-      if (!timeline[t.date][t.to]) {
-        timeline[t.date][t.to] = {
+    // For each date, use the last transition of the day
+    Object.entries(transitionsByDate).forEach(([date, dayTransitions]) => {
+      // Get the final status for this day
+      const finalStatus = dayTransitions[dayTransitions.length - 1].to;
+      
+      if (!timeline[date]) {
+        timeline[date] = {};
+      }
+      if (!timeline[date][finalStatus]) {
+        timeline[date][finalStatus] = {
           count: 0,
-          tickets: []
+          tickets: new Set() // Use Set to automatically handle duplicates
         };
       }
-      timeline[t.date][t.to].count++;
-      timeline[t.date][t.to].tickets.push(issue.key);
+      
+      timeline[date][finalStatus].count++;
+      timeline[date][finalStatus].tickets.add(issue.key);
+    });
+  });
+
+  // Convert Sets to Arrays before returning
+  Object.values(timeline).forEach(dateData => {
+    Object.values(dateData).forEach(statusData => {
+      statusData.tickets = Array.from(statusData.tickets);
     });
   });
 
