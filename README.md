@@ -24,3 +24,15 @@ This tool fetches Jira tickets with changelog data and displays how many tickets
 
 ## Customize
 - Modify the JQL in `index.js` to filter tickets as needed.
+
+
+
+
+npm install
+npm start for production
+npm run dev for development with auto-reload
+npm test for running tests
+npm run test:watch for watch mode
+npm run test:coverage for coverage reports
+npm run lint
+npm run lint:fix
