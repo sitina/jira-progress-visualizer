@@ -11,32 +11,44 @@
   <canvas id="progressChart"></canvas>
 
   <script>
+    console.log('🚀 Starting to fetch data...');
     fetch('/data')
-      .then(res => res.json())
+      .then(res => {
+        console.log('📥 Received response:', res.status);
+        return res.json();
+      })
       .then(data => {
-        const labels = Object.keys(data).sort((a, b) => a.localeCompare(b));
+        console.log('📊 Received data:', data);
+        const labels = Object.keys(data.timeline).sort((a, b) => a.localeCompare(b));
+        console.log('📅 Timeline dates:', labels);
         
         // Calculate total tickets per status
         const statusTotals = {};
         labels.forEach(date => {
-          Object.entries(data[date]).forEach(([status, count]) => {
+          Object.entries(data.timeline[date]).forEach(([status, count]) => {
             statusTotals[status] = (statusTotals[status] || 0) + count;
           });
         });
+        console.log('📈 Status totals:', statusTotals);
 
         // Get top 7 statuses by total count
         const topStatuses = Object.entries(statusTotals)
           .sort(([, countA], [, countB]) => countB - countA)
           .slice(0, 7)
           .map(([status]) => status);
+        console.log('🏆 Top statuses:', topStatuses);
 
         const datasets = topStatuses.map(status => ({
           label: status,
-          data: labels.map(date => data[date][status] || 0),
+          data: labels.map(date => data.timeline[date][status] || 0),
           borderWidth: 2,
           fill: false
         }));
 
+        // Display JQL query
+        document.getElementById('jqlQuery').textContent = `JQL: ${data.jql}`;
+
+        console.log('🎨 Creating chart...');
         new Chart(document.getElementById('progressChart'), {
           type: 'line',
           data: {
@@ -55,6 +67,11 @@
             }
           }
         });
+        console.log('✅ Chart created successfully');
+      })
+      .catch(error => {
+        console.error('❌ Error:', error);
+        document.body.innerHTML += `<p style="color: red">Error: ${error.message}</p>`;
       });
   </script>
 </body>

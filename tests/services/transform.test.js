@@ -1,4 +1,4 @@
-const { processTransitions } = require('./transform');
+const { processTransitions } = require('../../src/services/transform');
 
 describe('processTransitions', () => {
   it('should process an issue with no transitions', () => {

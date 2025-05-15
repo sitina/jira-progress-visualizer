@@ -1,11 +1,12 @@
 const request = require('supertest');
 const express = require('express');
-const { getJiraIssuesWithChangelog } = require('./jiraClient');
-const { processTransitions } = require('./transform');
+const { getJiraIssuesWithChangelog } = require('../../src/services/jiraClient');
+const { processTransitions } = require('../../src/services/transform');
+const routes = require('../../src/api/routes');
 
 // Mock the dependencies
-jest.mock('./jiraClient');
-jest.mock('./transform');
+jest.mock('../../src/services/jiraClient');
+jest.mock('../../src/services/transform');
 
 describe('API Endpoints', () => {
   let app;
@@ -16,19 +17,7 @@ describe('API Endpoints', () => {
     
     // Create a new app instance for each test
     app = express();
-    
-    // Define the route
-    app.get('/data', async (req, res) => {
-      try {
-        const jql = 'textfields ~ "BenerailConnect*"';
-        const issues = await getJiraIssuesWithChangelog(jql);
-        const timeline = processTransitions(issues);
-        res.json({ timeline, jql });
-      } catch (error) {
-        console.error('Error fetching Jira data:', error.message);
-        res.status(500).send('Error fetching Jira data');
-      }
-    });
+    app.use('/', routes);
   });
 
   describe('GET /data', () => {

@@ -1,6 +1,6 @@
 const axios = require('axios');
 const MockAdapter = require('axios-mock-adapter');
-const { getJiraIssuesWithChangelog } = require('./jiraClient');
+const { getJiraIssuesWithChangelog } = require('../../src/services/jiraClient');
 
 describe('getJiraIssuesWithChangelog', () => {
   let mock;
