@@ -5,9 +5,9 @@ module.exports = {
   jira: {
     baseUrl: process.env.JIRA_BASE_URL,
     email: process.env.JIRA_EMAIL,
-    apiToken: process.env.JIRA_API_TOKEN
+    apiToken: process.env.JIRA_API_TOKEN,
   },
   jql: {
-    default: 'textfields ~ "BenerailConnect*"'
-  }
-}; 
+    default: 'textfields ~ "BenerailConnect*"',
+  },
+};

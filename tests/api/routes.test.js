@@ -14,7 +14,7 @@ describe('API Endpoints', () => {
   beforeEach(() => {
     // Clear all mocks before each test
     jest.clearAllMocks();
-    
+
     // Create a new app instance for each test
     app = express();
     app.use('/', routes);
@@ -27,16 +27,16 @@ describe('API Endpoints', () => {
           id: '1',
           fields: {
             status: { name: 'To Do' },
-            created: '2024-01-01T10:00:00.000Z'
+            created: '2024-01-01T10:00:00.000Z',
           },
           changelog: {
-            histories: []
-          }
-        }
+            histories: [],
+          },
+        },
       ];
 
       const mockTimeline = {
-        '2024-01-01': { 'To Do': 1 }
+        '2024-01-01': { 'To Do': 1 },
       };
 
       getJiraIssuesWithChangelog.mockResolvedValue(mockIssues);
@@ -49,7 +49,7 @@ describe('API Endpoints', () => {
 
       expect(response.body).toEqual({
         timeline: mockTimeline,
-        jql: 'textfields ~ "BenerailConnect*"'
+        jql: 'textfields ~ "BenerailConnect*"',
       });
 
       expect(getJiraIssuesWithChangelog).toHaveBeenCalledWith('textfields ~ "BenerailConnect*"');
@@ -66,4 +66,4 @@ describe('API Endpoints', () => {
       expect(response.text).toBe('Error fetching Jira data');
     });
   });
-}); 
+});

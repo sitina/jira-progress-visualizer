@@ -4,77 +4,56 @@ const { getJiraIssuesWithChangelog } = require('../../src/services/jiraClient');
 
 describe('getJiraIssuesWithChangelog', () => {
   let mock;
+  const baseUrl = 'https://goeuro.atlassian.net';
+  const email = 'test@example.com';
+  const token = 'test-token';
 
   beforeEach(() => {
+    process.env.JIRA_BASE_URL = baseUrl;
+    process.env.JIRA_EMAIL = email;
+    process.env.JIRA_API_TOKEN = token;
     mock = new MockAdapter(axios);
-    process.env.JIRA_BASE_URL = 'https://test.atlassian.net';
-    process.env.JIRA_EMAIL = 'test@example.com';
-    process.env.JIRA_API_TOKEN = 'test-token';
   });
 
   afterEach(() => {
-    mock.reset();
+    mock.restore();
   });
 
   it('should fetch issues with changelog', async () => {
-    const mockIssues = [
+    const jql = 'project = TEST';
+    const issues = [
       {
         id: '1',
-        fields: {
-          status: { name: 'To Do' },
-          created: '2024-01-01T10:00:00.000Z'
-        },
-        changelog: {
-          histories: []
-        }
-      }
+        key: 'ISSUE-1',
+        fields: { status: { name: 'Done' }, created: '2024-01-01T10:00:00.000Z' },
+        changelog: { histories: [] },
+      },
     ];
-
-    mock.onGet(`${process.env.JIRA_BASE_URL}/rest/api/3/search`, {
+    mock.onGet(`${baseUrl}/rest/api/3/search`, {
       params: {
-        jql: 'test query',
+        jql,
         expand: 'changelog',
-        maxResults: 100
+        maxResults: 100,
       },
       auth: {
-        username: process.env.JIRA_EMAIL,
-        password: process.env.JIRA_API_TOKEN
-      }
-    }).reply(200, { issues: mockIssues });
-
-    const result = await getJiraIssuesWithChangelog('test query');
-    expect(result).toEqual(mockIssues);
-  });
-
-  it('should handle API errors', async () => {
-    mock.onGet(`${process.env.JIRA_BASE_URL}/rest/api/3/search`, {
-      params: {
-        jql: 'test query',
-        expand: 'changelog',
-        maxResults: 100
+        username: email,
+        password: token,
       },
-      auth: {
-        username: process.env.JIRA_EMAIL,
-        password: process.env.JIRA_API_TOKEN
-      }
-    }).reply(500);
+    }).reply(200, { issues });
 
-    await expect(getJiraIssuesWithChangelog('test query')).rejects.toThrow();
+    const result = await getJiraIssuesWithChangelog(jql);
+    expect(result).toEqual(issues);
   });
 
-  it('should handle network errors', async () => {
-    mock.onGet(`${process.env.JIRA_BASE_URL}/rest/api/3/search`, {
-      params: {
-        jql: 'test query',
-        expand: 'changelog',
-        maxResults: 100
-      },
-      auth: {
-        username: process.env.JIRA_EMAIL,
-        password: process.env.JIRA_API_TOKEN
-      }
-    }).networkError();
-
-    await expect(getJiraIssuesWithChangelog('test query')).rejects.toThrow();
+  it('should throw on API error', async () => {
+    const jql = 'project = TEST';
+    mock.onGet(`${baseUrl}/rest/api/3/search`).reply(500);
+    await expect(getJiraIssuesWithChangelog(jql)).rejects.toThrow();
   });
-}); 
+
+  it('should throw on network error', async () => {
+    const jql = 'project = TEST';
+    mock.onGet(`${baseUrl}/rest/api/3/search`).networkError();
+    await expect(getJiraIssuesWithChangelog(jql)).rejects.toThrow();
+  });
+});

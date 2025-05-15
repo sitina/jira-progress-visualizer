@@ -5,7 +5,7 @@ async function getJiraIssuesWithChangelog(jql) {
   console.log('🔑 Using Jira credentials:', {
     baseUrl: config.jira.baseUrl,
     email: config.jira.email,
-    hasToken: !!config.jira.apiToken
+    hasToken: !!config.jira.apiToken,
   });
 
   try {
@@ -13,12 +13,12 @@ async function getJiraIssuesWithChangelog(jql) {
       params: {
         jql,
         expand: 'changelog',
-        maxResults: 100
+        maxResults: 100,
       },
       auth: {
         username: config.jira.email,
-        password: config.jira.apiToken
-      }
+        password: config.jira.apiToken,
+      },
     });
 
     console.log('📡 Jira API Response Status:', response.status);
@@ -27,7 +27,7 @@ async function getJiraIssuesWithChangelog(jql) {
     console.error('❌ Jira API Error:', {
       status: error.response?.status,
       message: error.message,
-      data: error.response?.data
+      data: error.response?.data,
     });
     throw error;
   }
