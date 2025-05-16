@@ -16,25 +16,23 @@ This tool fetches Jira tickets with changelog data and displays how many tickets
    JIRA_EMAIL=your-email@example.com
    JIRA_API_TOKEN=your-api-token
    ```
-3. Run the app:
+3. Update the JQL query to match your needs in `config/index.js`
+
+4. Run the app:
    ```bash
    npm start
    ```
-4. Open `http://localhost:3000` in your browser.
-
-## Customize
-- Modify the JQL in `config/index.js` to filter tickets as needed.
-
+5. Open `http://localhost:3000` in your browser.
 
 
 ## Relevant commands to control the app:
 ```bash
 npm install
-npm start for production
-npm run dev for development with auto-reload
-npm test for running tests
-npm run test:watch for watch mode
-npm run test:coverage for coverage reports
+npm start - for production
+npm run dev - for development with auto-reload
+npm test - for running tests
+npm run test:watch - for watch mode
+npm run test:coverage - for coverage reports
 npm run lint
 npm run lint:fix
 ```
