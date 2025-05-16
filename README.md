@@ -23,11 +23,12 @@ This tool fetches Jira tickets with changelog data and displays how many tickets
 4. Open `http://localhost:3000` in your browser.
 
 ## Customize
-- Modify the JQL in `index.js` to filter tickets as needed.
+- Modify the JQL in `config/index.js` to filter tickets as needed.
 
 
 
-
+## Relevant commands to control the app:
+```bash
 npm install
 npm start for production
 npm run dev for development with auto-reload
@@ -36,3 +37,4 @@ npm run test:watch for watch mode
 npm run test:coverage for coverage reports
 npm run lint
 npm run lint:fix
+```
